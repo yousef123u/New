@@ -1,14 +1,14 @@
 from flask import Flask, request
 from telegram import Bot, Update
 from telegram.ext import Dispatcher, CommandHandler, CallbackContext
+import os
 
-TOKEN = "8007150171:AAEaGH7Y-MkCdb6lISZTo3HfYadXiZ2V5yQ"
+TOKEN = os.environ.get("8007150171:AAEaGH7Y-MkCdb6lISZTo3HfYadXiZ2V5yQ")  # ← التوكن هيجي من المتغيرات في Railway
 
 app = Flask(__name__)
 bot = Bot(token=TOKEN)
 dispatcher = Dispatcher(bot, None, workers=0, use_context=True)
 
-# Data storage
 session = {
     "round": 0,
     "balance": 0,
@@ -52,7 +52,6 @@ def reset(update: Update, context: CallbackContext):
     session["balance"] = 0
     update.message.reply_text("🔁 Bot has been reset.")
 
-# Handlers
 dispatcher.add_handler(CommandHandler("start", start))
 dispatcher.add_handler(CommandHandler("hit", hit))
 dispatcher.add_handler(CommandHandler("miss", miss))
@@ -70,4 +69,5 @@ def home():
     return "Bot is running."
 
 if __name__ == "__main__":
-    app.run(port=10000)
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port)
